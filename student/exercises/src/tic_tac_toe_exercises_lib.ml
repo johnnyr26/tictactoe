@@ -93,23 +93,6 @@ let available_moves
    After you are done with this implementation, you can uncomment out
    "evaluate" test cases found below in this file. *)
 
-let same_pieces
-  ~(piece_list : Position.t list)
-  ~(pieces : Piece.t Position.Map.t)
-  : bool
-  =
-  List.for_all piece_list ~f:(fun piece ->
-    match Map.find pieces piece with
-    | Some Piece.O -> true
-    | Some Piece.X -> false
-    | None -> false)
-  || List.for_all piece_list ~f:(fun piece ->
-       match Map.find pieces piece with
-       | Some Piece.O -> false
-       | Some Piece.X -> true
-       | None -> false)
-;;
-
 let rec evaluate_row
   ~(game_kind : Game_kind.t)
   ~(pieces : Piece.t Position.Map.t)
@@ -155,14 +138,14 @@ let rec evaluate_col
   else (
     match Map.find pieces piece with
     | Some turn ->
-      evaluate_row
+      evaluate_col
         ~game_kind
         ~pieces
         ~count:(count + 1)
         ~piece:(Position.down piece)
         ~turn
     | _ ->
-      evaluate_row
+      evaluate_col
         ~game_kind
         ~pieces
         ~count:0
@@ -329,13 +312,13 @@ let%expect_test "no available_moves" =
 
 (* When you've implemented the [evaluate] function, uncomment the next two
    tests! *)
-(* let%expect_test "evalulate_win_for_x" = print_endline (evaluate
+let%expect_test "evalulate_win_for_x" = print_endline (evaluate
    ~game_kind:win_for_x.game_kind ~pieces:win_for_x.pieces |>
    Evaluation.to_string); [%expect {| (Win (X)) |}] ;;
 
    let%expect_test "evalulate_non_win" = print_endline (evaluate
    ~game_kind:non_win.game_kind ~pieces:non_win.pieces |>
-   Evaluation.to_string); [%expect {| Game_continues |}] ;; *)
+   Evaluation.to_string); [%expect {| Game_continues |}] ;;
 
 (* When you've implemented the [winning_moves] function, uncomment this
    test! *)
