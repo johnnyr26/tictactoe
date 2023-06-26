@@ -153,6 +153,66 @@ let rec evaluate_col
         ~turn)
 ;;
 
+let rec evaluate_left_diag
+  ~(game_kind : Game_kind.t)
+  ~(pieces : Piece.t Position.Map.t)
+  ~(count : int)
+  ~(piece : Position.t)
+  ~(turn : Piece.t)
+  : bool
+  =
+  if count = win_count ~game_kind
+  then true
+  else if not (Position.in_bounds ~game_kind piece)
+  then false
+  else (
+    match Map.find pieces piece with
+    | Some turn ->
+      evaluate_left_diag
+        ~game_kind
+        ~pieces
+        ~count:(count + 1)
+        ~piece:(Position.down_left piece)
+        ~turn
+    | _ ->
+      evaluate_left_diag
+        ~game_kind
+        ~pieces
+        ~count:0
+        ~piece:(Position.down_left piece)
+        ~turn)
+;;
+
+let rec evaluate_right_diag
+  ~(game_kind : Game_kind.t)
+  ~(pieces : Piece.t Position.Map.t)
+  ~(count : int)
+  ~(piece : Position.t)
+  ~(turn : Piece.t)
+  : bool
+  =
+  if count = win_count ~game_kind
+  then true
+  else if not (Position.in_bounds ~game_kind piece)
+  then false
+  else (
+    match Map.find pieces piece with
+    | Some turn ->
+      evaluate_right_diag
+        ~game_kind
+        ~pieces
+        ~count:(count + 1)
+        ~piece:(Position.down_right piece)
+        ~turn
+    | _ ->
+      evaluate_right_diag
+        ~game_kind
+        ~pieces
+        ~count:0
+        ~piece:(Position.down_right piece)
+        ~turn)
+;;
+
 let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t) =
   let list =
     List.init (board_size ~game_kind) ~f:(fun row ->
@@ -312,13 +372,19 @@ let%expect_test "no available_moves" =
 
 (* When you've implemented the [evaluate] function, uncomment the next two
    tests! *)
-let%expect_test "evalulate_win_for_x" = print_endline (evaluate
-   ~game_kind:win_for_x.game_kind ~pieces:win_for_x.pieces |>
-   Evaluation.to_string); [%expect {| (Win (X)) |}] ;;
+let%expect_test "evalulate_win_for_x" =
+  print_endline
+    (evaluate ~game_kind:win_for_x.game_kind ~pieces:win_for_x.pieces
+     |> Evaluation.to_string);
+  [%expect {| (Win (X)) |}]
+;;
 
-   let%expect_test "evalulate_non_win" = print_endline (evaluate
-   ~game_kind:non_win.game_kind ~pieces:non_win.pieces |>
-   Evaluation.to_string); [%expect {| Game_continues |}] ;;
+let%expect_test "evalulate_non_win" =
+  print_endline
+    (evaluate ~game_kind:non_win.game_kind ~pieces:non_win.pieces
+     |> Evaluation.to_string);
+  [%expect {| Game_continues |}]
+;;
 
 (* When you've implemented the [winning_moves] function, uncomment this
    test! *)
