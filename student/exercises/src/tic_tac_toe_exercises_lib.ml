@@ -56,14 +56,18 @@ let non_win =
 ;;
 
 let board_size ~(game_kind : Game_kind.t) : int =
-  match game_kind with Game_kind.Tic_tac_toe -> 3 | Game_kind.Omok -> 15
+  match game_kind with Tic_tac_toe -> 3 | Omok -> 15
+;;
+
+let win_count ~(game_kind : Game_kind.t) : int =
+  match game_kind with Tic_tac_toe -> 3 | Omok -> 5
 ;;
 
 let create_board ~(game_kind : Game_kind.t) : Position.t list =
   List.concat
     (List.init (board_size ~game_kind) ~f:(fun row ->
        List.init (board_size ~game_kind) ~f:(fun column ->
-         { Position.row; column })))
+         { Position.row; Position.column })))
 ;;
 
 (* Exercise 1.
@@ -88,12 +92,96 @@ let available_moves
 
    After you are done with this implementation, you can uncomment out
    "evaluate" test cases found below in this file. *)
-let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t)
-  : Evaluation.t
+
+let same_pieces
+  ~(piece_list : Position.t list)
+  ~(pieces : Piece.t Position.Map.t)
+  : bool
   =
-  ignore pieces;
-  ignore game_kind;
-  failwith "Implement me!"
+  List.for_all piece_list ~f:(fun piece ->
+    match Map.find pieces piece with
+    | Some Piece.O -> true
+    | Some Piece.X -> false
+    | None -> false)
+  || List.for_all piece_list ~f:(fun piece ->
+       match Map.find pieces piece with
+       | Some Piece.O -> false
+       | Some Piece.X -> true
+       | None -> false)
+;;
+
+let rec evaluate_row
+  ~(game_kind : Game_kind.t)
+  ~(pieces : Piece.t Position.Map.t)
+  ~(count : int)
+  ~(piece : Position.t)
+  ~(turn : Piece.t)
+  : bool
+  =
+  if count = win_count ~game_kind
+  then true
+  else if not (Position.in_bounds ~game_kind piece)
+  then false
+  else (
+    match Map.find pieces piece with
+    | Some turn ->
+      evaluate_row
+        ~game_kind
+        ~pieces
+        ~count:(count + 1)
+        ~piece:(Position.right piece)
+        ~turn
+    | _ ->
+      evaluate_row
+        ~game_kind
+        ~pieces
+        ~count:0
+        ~piece:(Position.right piece)
+        ~turn)
+;;
+
+let rec evaluate_col
+  ~(game_kind : Game_kind.t)
+  ~(pieces : Piece.t Position.Map.t)
+  ~(count : int)
+  ~(piece : Position.t)
+  ~(turn : Piece.t)
+  : bool
+  =
+  if count = win_count ~game_kind
+  then true
+  else if not (Position.in_bounds ~game_kind piece)
+  then false
+  else (
+    match Map.find pieces piece with
+    | Some turn ->
+      evaluate_row
+        ~game_kind
+        ~pieces
+        ~count:(count + 1)
+        ~piece:(Position.down piece)
+        ~turn
+    | _ ->
+      evaluate_row
+        ~game_kind
+        ~pieces
+        ~count:0
+        ~piece:(Position.down piece)
+        ~turn)
+;;
+
+let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t) =
+  let list =
+    List.init (board_size ~game_kind) ~f:(fun row ->
+      { Position.row; column = 0 })
+  in
+  if List.exists list ~f:(fun piece ->
+       evaluate_row ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.X
+       || evaluate_col ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.X
+       || evaluate_row ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.O
+       || evaluate_col ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.O)
+  then Evaluation.Game_over { winner = Some Piece.X }
+  else Evaluation.Game_continues
 ;;
 
 (* Exercise 3. *)
