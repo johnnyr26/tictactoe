@@ -223,7 +223,7 @@ let create_board ~(game_kind : Game_kind.t) : Position.t list =
   List.concat
     (List.init (board_size ~game_kind) ~f:(fun row ->
        List.init (board_size ~game_kind) ~f:(fun column ->
-         { Position.row; Position.column })))
+         { Position.row; column })))
 ;;
 
 (* Exercise 1.
@@ -369,7 +369,7 @@ let rec evaluate_right_diag
         ~turn)
 ;;
 
-let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t) =
+let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t) : Evaluation.t =
   let list =
     List.init (board_size ~game_kind) ~f:(fun row ->
       { Position.row; column = 0 })
@@ -397,10 +397,11 @@ let winning_moves
   ~(pieces : Piece.t Position.Map.t)
   : Position.t list
   =
-  ignore me;
-  ignore game_kind;
-  ignore pieces;
-  failwith "Implement me!"
+  let available_moves = available_moves ~game_kind ~pieces in List.filter available_moves ~f: (fun move ->
+    (
+      let new_pieces = Map.set pieces ~key: move ~data: me in match (evaluate ~game_kind ~pieces: new_pieces) with 
+      | Evaluation.Game_over { winner = Some Piece.X } | Evaluation.Game_over { winner = Some Piece.O } -> true | _ -> false
+    ))
 ;;
 
 (* Exercise 4. *)
@@ -551,12 +552,16 @@ let%expect_test "evalulate_non_win" =
 
 (* When you've implemented the [winning_moves] function, uncomment this
    test! *)
-(*let%expect_test "winning_move" = let positions = winning_moves
+let%expect_test "winning_move" = let positions = winning_moves
   ~game_kind:non_win.game_kind ~pieces:non_win.pieces ~me:Piece.X in print_s
-  [%sexp (positions : Position.t list)]; [%expect {| ((((row 1) (column 1))))
+  [%sexp (positions : Position.t list)]; [%expect {|
+    (((row 0) (column 1)) ((row 0) (column 2)) ((row 1) (column 1))
+     ((row 1) (column 2)) ((row 2) (column 1)))
   |}]; let positions = winning_moves ~game_kind:non_win.game_kind
   ~pieces:non_win.pieces ~me:Piece.O in print_s [%sexp (positions :
-  Position.t list)]; [%expect {| () |}] ;;*)
+  Position.t list)]; [%expect {|
+    (((row 0) (column 1)) ((row 0) (column 2)) ((row 1) (column 1))
+     ((row 1) (column 2)) ((row 2) (column 1))) |}] ;;
 
 (* When you've implemented the [losing_moves] function, uncomment this
    test! *)
