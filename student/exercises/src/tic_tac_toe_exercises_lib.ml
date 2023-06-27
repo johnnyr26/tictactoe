@@ -62,11 +62,13 @@ let win_for_o =
 
 let%expect_test "print_win_for_o" =
   print_endline (Game_state.to_string_hum win_for_o);
-  [%expect {|
+  [%expect
+    {|
     ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
     OXO
     XXO
-    XOO |}];;
+    XOO |}]
+;;
 
 let first_row_win_for_x =
   empty_game
@@ -79,11 +81,13 @@ let first_row_win_for_x =
 
 let%expect_test "print_first_row_win_for_x" =
   print_endline (Game_state.to_string_hum first_row_win_for_x);
-  [%expect {|
+  [%expect
+    {|
     ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
     XXX
     O
-    O |}];;
+    O |}]
+;;
 
 let first_row_win_for_o =
   empty_game
@@ -96,11 +100,13 @@ let first_row_win_for_o =
 
 let%expect_test "print_first_row_win_for_o" =
   print_endline (Game_state.to_string_hum first_row_win_for_o);
-  [%expect {|
+  [%expect
+    {|
     ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
     OOO
     X
-    X |}];;
+    X |}]
+;;
 
 let third_row_win_for_x =
   empty_game
@@ -113,11 +119,13 @@ let third_row_win_for_x =
 
 let%expect_test "print_third_row_win_for_x" =
   print_endline (Game_state.to_string_hum third_row_win_for_x);
-  [%expect {|
+  [%expect
+    {|
     ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
 
     OO
-    XXX |}];;
+    XXX |}]
+;;
 
 let third_row_win_for_o =
   empty_game
@@ -130,11 +138,13 @@ let third_row_win_for_o =
 
 let%expect_test "print_third_row_win_for_o" =
   print_endline (Game_state.to_string_hum third_row_win_for_o);
-  [%expect {|
+  [%expect
+    {|
     ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
 
     XX
-    OOO |}];;
+    OOO |}]
+;;
 
 let first_col_win_for_x =
   empty_game
@@ -147,11 +157,14 @@ let first_col_win_for_x =
 
 let%expect_test "print_first_col_win_for_x" =
   print_endline (Game_state.to_string_hum first_col_win_for_x);
-  [%expect {|
+  [%expect
+    {|
     ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
     XO
     X
-    X O |}];;
+    X O |}]
+;;
+
 let third_col_win_for_o =
   empty_game
   |> place_piece ~piece:Piece.O ~position:{ Position.row = 0; column = 2 }
@@ -163,11 +176,13 @@ let third_col_win_for_o =
 
 let%expect_test "print_third_col_win_for_o" =
   print_endline (Game_state.to_string_hum third_col_win_for_o);
-  [%expect {|
+  [%expect
+    {|
     ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
       O
     XXO
-      O |}];;
+      O |}]
+;;
 
 let left_diag_win_for_x =
   empty_game
@@ -180,13 +195,15 @@ let left_diag_win_for_x =
 
 let%expect_test "print_left_diag_win_for_x" =
   print_endline (Game_state.to_string_hum left_diag_win_for_x);
-  [%expect {|
+  [%expect
+    {|
     ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
     XO
      X
-    O X |}];;
+    O X |}]
+;;
 
-let right_diag_win_for_o  =
+let right_diag_win_for_o =
   empty_game
   |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 0 }
   |> place_piece ~piece:Piece.X ~position:{ Position.row = 0; column = 1 }
@@ -197,11 +214,13 @@ let right_diag_win_for_o  =
 
 let%expect_test "right_diag_win_for_o" =
   print_endline (Game_state.to_string_hum right_diag_win_for_o);
-  [%expect {|
+  [%expect
+    {|
     ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
     XXO
      O
-    O |}];;
+    O |}]
+;;
 
 let non_win =
   empty_game
@@ -253,140 +272,210 @@ let rec evaluate_row
   ~(game_kind : Game_kind.t)
   ~(pieces : Piece.t Position.Map.t)
   ~(count : int)
-  ~(piece : Position.t)
-  ~(turn : Piece.t)
+  ~(position : Position.t)
+  ~(me : Piece.t)
   : bool
   =
   if count = win_count ~game_kind
   then true
-  else if not (Position.in_bounds ~game_kind piece)
+  else if not (Position.in_bounds ~game_kind position)
   then false
   else (
-    match Map.find pieces piece with
-    | Some turn ->
-      evaluate_row
-        ~game_kind
-        ~pieces
-        ~count:(count + 1)
-        ~piece:(Position.right piece)
-        ~turn
-    | _ ->
+    match Map.find pieces position with
+    | Some piece ->
+      if Piece.equal piece me
+      then
+        evaluate_row
+          ~game_kind
+          ~pieces
+          ~count:(count + 1)
+          ~position:(Position.right position)
+          ~me
+      else
+        evaluate_row
+          ~game_kind
+          ~pieces
+          ~count:0
+          ~position:(Position.right position)
+          ~me
+    | None ->
       evaluate_row
         ~game_kind
         ~pieces
         ~count:0
-        ~piece:(Position.right piece)
-        ~turn)
+        ~position:(Position.right position)
+        ~me)
+;;
+
+let third_row_no_win_for_x_1 =
+  empty_game
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 2; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 1; column = 0 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 2; column = 1 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 1; column = 1 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 2 }
+;;
+
+let%expect_test "print_third_row_win_for_o" =
+  printf
+    "%b"
+    (evaluate_row
+       ~game_kind:Game_kind.Tic_tac_toe
+       ~pieces:third_row_no_win_for_x_1.pieces
+       ~count:0
+       ~position:{ Position.row = 1; column = 0 }
+       ~me:Piece.X);
+  [%expect {| false |}]
 ;;
 
 let rec evaluate_col
   ~(game_kind : Game_kind.t)
   ~(pieces : Piece.t Position.Map.t)
   ~(count : int)
-  ~(piece : Position.t)
-  ~(turn : Piece.t)
+  ~(position : Position.t)
+  ~(me : Piece.t)
   : bool
   =
   if count = win_count ~game_kind
   then true
-  else if not (Position.in_bounds ~game_kind piece)
+  else if not (Position.in_bounds ~game_kind position)
   then false
   else (
-    match Map.find pieces piece with
-    | Some turn ->
-      evaluate_col
-        ~game_kind
-        ~pieces
-        ~count:(count + 1)
-        ~piece:(Position.down piece)
-        ~turn
-    | _ ->
+    match Map.find pieces position with
+    | Some piece ->
+      if Piece.equal piece me
+      then
+        evaluate_col
+          ~game_kind
+          ~pieces
+          ~count:(count + 1)
+          ~position:(Position.down position)
+          ~me
+      else
+        evaluate_col
+          ~game_kind
+          ~pieces
+          ~count:0
+          ~position:(Position.down position)
+          ~me
+    | None ->
       evaluate_col
         ~game_kind
         ~pieces
         ~count:0
-        ~piece:(Position.down piece)
-        ~turn)
+        ~position:(Position.down position)
+        ~me)
 ;;
 
 let rec evaluate_left_diag
   ~(game_kind : Game_kind.t)
   ~(pieces : Piece.t Position.Map.t)
   ~(count : int)
-  ~(piece : Position.t)
-  ~(turn : Piece.t)
+  ~(position : Position.t)
+  ~(me : Piece.t)
   : bool
   =
   if count = win_count ~game_kind
   then true
-  else if not (Position.in_bounds ~game_kind piece)
+  else if not (Position.in_bounds ~game_kind position)
   then false
   else (
-    match Map.find pieces piece with
-    | Some turn ->
-      evaluate_left_diag
-        ~game_kind
-        ~pieces
-        ~count:(count + 1)
-        ~piece:(Position.down_left piece)
-        ~turn
-    | _ ->
+    match Map.find pieces position with
+    | Some piece ->
+      if Piece.equal piece me
+      then
+        evaluate_left_diag
+          ~game_kind
+          ~pieces
+          ~count:(count + 1)
+          ~position:(Position.down_left position)
+          ~me
+      else
+        evaluate_left_diag
+          ~game_kind
+          ~pieces
+          ~count:0
+          ~position:(Position.down_left position)
+          ~me
+    | None ->
       evaluate_left_diag
         ~game_kind
         ~pieces
         ~count:0
-        ~piece:(Position.down_left piece)
-        ~turn)
+        ~position:(Position.down_left position)
+        ~me)
 ;;
 
 let rec evaluate_right_diag
   ~(game_kind : Game_kind.t)
   ~(pieces : Piece.t Position.Map.t)
   ~(count : int)
-  ~(piece : Position.t)
-  ~(turn : Piece.t)
+  ~(position : Position.t)
+  ~(me : Piece.t)
   : bool
   =
   if count = win_count ~game_kind
   then true
-  else if not (Position.in_bounds ~game_kind piece)
+  else if not (Position.in_bounds ~game_kind position)
   then false
   else (
-    match Map.find pieces piece with
-    | Some turn ->
-      evaluate_right_diag
-        ~game_kind
-        ~pieces
-        ~count:(count + 1)
-        ~piece:(Position.down_right piece)
-        ~turn
-    | _ ->
+    match Map.find pieces position with
+    | Some piece ->
+      if Piece.equal piece me
+      then
+        evaluate_right_diag
+          ~game_kind
+          ~pieces
+          ~count:(count + 1)
+          ~position:(Position.down_right position)
+          ~me
+      else
+        evaluate_right_diag
+          ~game_kind
+          ~pieces
+          ~count:0
+          ~position:(Position.down_right position)
+          ~me
+    | None ->
       evaluate_right_diag
         ~game_kind
         ~pieces
         ~count:0
-        ~piece:(Position.down_right piece)
-        ~turn)
+        ~position:(Position.down_right position)
+        ~me)
 ;;
 
-let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t) : Evaluation.t =
-  let list =
-    List.init (board_size ~game_kind) ~f:(fun row ->
-      { Position.row; column = 0 })
+let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t)
+  : Evaluation.t
+  =
+  let x_win =
+    List.exists (create_board ~game_kind) ~f:(fun position ->
+      evaluate_row ~game_kind ~pieces ~count:0 ~position ~me:Piece.X
+      || evaluate_col ~game_kind ~pieces ~count:0 ~position ~me:Piece.X
+      || evaluate_left_diag ~game_kind ~pieces ~count:0 ~position ~me:Piece.X
+      || evaluate_right_diag
+           ~game_kind
+           ~pieces
+           ~count:0
+           ~position
+           ~me:Piece.X)
   in
-  if List.exists list ~f:(fun piece ->
-       evaluate_row ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.X
-       || evaluate_col ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.X
-       || evaluate_row ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.O
-       || evaluate_col ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.O) 
-  ||
-  List.exists (create_board ~game_kind) ~f:(fun piece -> 
-    evaluate_left_diag ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.X
-    || evaluate_left_diag ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.O
-    || evaluate_right_diag ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.X
-    || evaluate_right_diag ~game_kind ~pieces ~count:0 ~piece ~turn: Piece.O
-  )
+  let o_win =
+    List.exists (create_board ~game_kind) ~f:(fun position ->
+      evaluate_row ~game_kind ~pieces ~count:0 ~position ~me:Piece.O
+      || evaluate_col ~game_kind ~pieces ~count:0 ~position ~me:Piece.O
+      || evaluate_left_diag ~game_kind ~pieces ~count:0 ~position ~me:Piece.O
+      || evaluate_right_diag
+           ~game_kind
+           ~pieces
+           ~count:0
+           ~position
+           ~me:Piece.O)
+  in
+  if x_win
   then Evaluation.Game_over { winner = Some Piece.X }
+  else if o_win
+  then Evaluation.Game_over { winner = Some Piece.O }
   else Evaluation.Game_continues
 ;;
 
@@ -397,11 +486,20 @@ let winning_moves
   ~(pieces : Piece.t Position.Map.t)
   : Position.t list
   =
-  let available_moves = available_moves ~game_kind ~pieces in List.filter available_moves ~f: (fun move ->
-    (
-      let new_pieces = Map.set pieces ~key: move ~data: me in match (evaluate ~game_kind ~pieces: new_pieces) with 
-      | Evaluation.Game_over { winner = Some Piece.X } | Evaluation.Game_over { winner = Some Piece.O } -> true | _ -> false
-    ))
+  let available_moves = available_moves ~game_kind ~pieces in
+  List.filter available_moves ~f:(fun move ->
+    let new_pieces = Map.set pieces ~key:move ~data:me in
+    match evaluate ~game_kind ~pieces:new_pieces with
+    | Evaluation.Game_over { winner = Some winner } ->
+      printf
+        "%s %i %s \n"
+        (Piece.to_string winner)
+        (List.length (Map.keys new_pieces))
+        (Position.to_string move);
+      Piece.equal me winner
+    | Evaluation.Game_over { winner = None }
+    | Evaluation.Game_continues | Evaluation.Illegal_state ->
+      false)
 ;;
 
 (* Exercise 4. *)
@@ -547,21 +645,33 @@ let%expect_test "evalulate_non_win" =
   print_endline
     (evaluate ~game_kind:non_win.game_kind ~pieces:non_win.pieces
      |> Evaluation.to_string);
-  [%expect {| (Game_over(winner(X))) |}]
+  [%expect {| Game_continues |}]
 ;;
 
 (* When you've implemented the [winning_moves] function, uncomment this
    test! *)
-let%expect_test "winning_move" = let positions = winning_moves
-  ~game_kind:non_win.game_kind ~pieces:non_win.pieces ~me:Piece.X in print_s
-  [%sexp (positions : Position.t list)]; [%expect {|
-    (((row 0) (column 1)) ((row 0) (column 2)) ((row 1) (column 1))
-     ((row 1) (column 2)) ((row 2) (column 1)))
-  |}]; let positions = winning_moves ~game_kind:non_win.game_kind
-  ~pieces:non_win.pieces ~me:Piece.O in print_s [%sexp (positions :
-  Position.t list)]; [%expect {|
-    (((row 0) (column 1)) ((row 0) (column 2)) ((row 1) (column 1))
-     ((row 1) (column 2)) ((row 2) (column 1))) |}] ;;
+let%expect_test "winning_move" =
+  let positions =
+    winning_moves
+      ~game_kind:non_win.game_kind
+      ~pieces:non_win.pieces
+      ~me:Piece.X
+  in
+  print_s [%sexp (positions : Position.t list)];
+  [%expect {|
+    X 5 ((row 1) (column 1))
+    (((row 1) (column 1)))
+  |}];
+  let positions =
+    winning_moves
+      ~game_kind:non_win.game_kind
+      ~pieces:non_win.pieces
+      ~me:Piece.O
+  in
+  print_s [%sexp (positions : Position.t list)];
+  [%expect {|
+    () |}]
+;;
 
 (* When you've implemented the [losing_moves] function, uncomment this
    test! *)
