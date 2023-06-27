@@ -222,7 +222,14 @@ let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t) =
        evaluate_row ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.X
        || evaluate_col ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.X
        || evaluate_row ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.O
-       || evaluate_col ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.O)
+       || evaluate_col ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.O) 
+  ||
+  List.exists (create_board ~game_kind) ~f:(fun piece -> 
+    evaluate_left_diag ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.X
+    || evaluate_left_diag ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.O
+    || evaluate_right_diag ~game_kind ~pieces ~count:0 ~piece ~turn:Piece.X
+    || evaluate_right_diag ~game_kind ~pieces ~count:0 ~piece ~turn: Piece.O
+  )
   then Evaluation.Game_over { winner = Some Piece.X }
   else Evaluation.Game_continues
 ;;
@@ -376,14 +383,14 @@ let%expect_test "evalulate_win_for_x" =
   print_endline
     (evaluate ~game_kind:win_for_x.game_kind ~pieces:win_for_x.pieces
      |> Evaluation.to_string);
-  [%expect {| (Win (X)) |}]
+  [%expect {| (Game_over(winner(X))) |}]
 ;;
 
 let%expect_test "evalulate_non_win" =
   print_endline
     (evaluate ~game_kind:non_win.game_kind ~pieces:non_win.pieces
      |> Evaluation.to_string);
-  [%expect {| Game_continues |}]
+  [%expect {| (Game_over(winner(X))) |}]
 ;;
 
 (* When you've implemented the [winning_moves] function, uncomment this
