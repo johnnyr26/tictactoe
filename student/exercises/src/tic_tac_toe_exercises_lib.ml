@@ -47,6 +47,162 @@ let win_for_x =
   |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 2 }
 ;;
 
+let win_for_o =
+  empty_game
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 0; column = 0 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 2 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 2; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 1 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 1 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 0; column = 2 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 0; column = 1 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 1; column = 2 }
+;;
+
+let%expect_test "print_win_for_o" =
+  print_endline (Game_state.to_string_hum win_for_o);
+  [%expect {|
+    ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
+    OXO
+    XXO
+    XOO |}];;
+
+let first_row_win_for_x =
+  empty_game
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 0; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 1; column = 0 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 0; column = 1 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 0 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 0; column = 2 }
+;;
+
+let%expect_test "print_first_row_win_for_x" =
+  print_endline (Game_state.to_string_hum first_row_win_for_x);
+  [%expect {|
+    ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
+    XXX
+    O
+    O |}];;
+
+let first_row_win_for_o =
+  empty_game
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 0; column = 0 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 0; column = 1 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 2; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 0; column = 2 }
+;;
+
+let%expect_test "print_first_row_win_for_o" =
+  print_endline (Game_state.to_string_hum first_row_win_for_o);
+  [%expect {|
+    ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
+    OOO
+    X
+    X |}];;
+
+let third_row_win_for_x =
+  empty_game
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 2; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 1; column = 0 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 2; column = 1 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 1; column = 1 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 2; column = 2 }
+;;
+
+let%expect_test "print_third_row_win_for_x" =
+  print_endline (Game_state.to_string_hum third_row_win_for_x);
+  [%expect {|
+    ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
+
+    OO
+    XXX |}];;
+
+let third_row_win_for_o =
+  empty_game
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 0 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 1 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 1 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 2 }
+;;
+
+let%expect_test "print_third_row_win_for_o" =
+  print_endline (Game_state.to_string_hum third_row_win_for_o);
+  [%expect {|
+    ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
+
+    XX
+    OOO |}];;
+
+let first_col_win_for_x =
+  empty_game
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 0; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 0; column = 1 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 2 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 2; column = 0 }
+;;
+
+let%expect_test "print_first_col_win_for_x" =
+  print_endline (Game_state.to_string_hum first_col_win_for_x);
+  [%expect {|
+    ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
+    XO
+    X
+    X O |}];;
+let third_col_win_for_o =
+  empty_game
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 0; column = 2 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 1; column = 2 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 1 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 2 }
+;;
+
+let%expect_test "print_third_col_win_for_o" =
+  print_endline (Game_state.to_string_hum third_col_win_for_o);
+  [%expect {|
+    ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
+      O
+    XXO
+      O |}];;
+
+let left_diag_win_for_x =
+  empty_game
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 0; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 0; column = 1 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 1; column = 1 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 0 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 2; column = 2 }
+;;
+
+let%expect_test "print_left_diag_win_for_x" =
+  print_endline (Game_state.to_string_hum left_diag_win_for_x);
+  [%expect {|
+    ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
+    XO
+     X
+    O X |}];;
+
+let right_diag_win_for_o  =
+  empty_game
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 2; column = 0 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 0; column = 1 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 1; column = 1 }
+  |> place_piece ~piece:Piece.X ~position:{ Position.row = 0; column = 0 }
+  |> place_piece ~piece:Piece.O ~position:{ Position.row = 0; column = 2 }
+;;
+
+let%expect_test "right_diag_win_for_o" =
+  print_endline (Game_state.to_string_hum right_diag_win_for_o);
+  [%expect {|
+    ((game_id 0)(game_kind Tic_tac_toe)(player_x(Player Player_X))(player_o(Player Player_O))(game_status(Turn_of X)))
+    XXO
+     O
+    O |}];;
+
 let non_win =
   empty_game
   |> place_piece ~piece:Piece.X ~position:{ Position.row = 0; column = 0 }
