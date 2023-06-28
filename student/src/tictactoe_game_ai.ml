@@ -119,7 +119,6 @@ let terminal_nodes ~(me : Piece.t) ~(game_state : Game_state.t) =
     || List.length available_moves = 1)
 ;;
 
-
 (* TODO: Discuss implementation of this code with TA *)
 let rec minimax
   ~(node : Position.t)
@@ -190,8 +189,21 @@ let _ = minimax
 let compute_next_move ~(me : Piece.t) ~(game_state : Game_state.t)
   : Position.t
   =
-  pick_winning_move_or_block_if_possible_strategy
-    ~me
-    ~game_kind:Tic_tac_toe
-    ~pieces:game_state.pieces
+  let available_moves =
+    Tic_tac_toe_exercises_lib.available_moves
+      ~game_kind:Game_kind.Tic_tac_toe
+      ~pieces:game_state.pieces
+  in
+  let max_score_position =
+    List.max_elt available_moves ~compare:(fun pos1 pos2 ->
+      Float.compare
+        (minimax ~node:pos1 ~depth:9 ~maximizing_player:true ~me ~game_state)
+        (minimax ~node:pos2 ~depth:9 ~maximizing_player:true ~me ~game_state))
+  in
+  match max_score_position with
+  | Some position -> position
+  | None -> 
+    random_move_strategy
+      ~game_kind:Game_kind.Tic_tac_toe
+      ~pieces:game_state.pieces
 ;;

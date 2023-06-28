@@ -650,7 +650,6 @@ let%expect_test "winning_move" =
   in
   print_s [%sexp (positions : Position.t list)];
   [%expect {|
-    X 5 ((row 1) (column 1))
     (((row 1) (column 1)))
   |}];
   let positions =
