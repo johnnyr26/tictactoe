@@ -159,7 +159,7 @@ let rec minimax
     let value = Float.infinity in
     List.fold available_moves ~init:value ~f:(fun value child ->
       match
-        List.max_elt
+        List.min_elt
           [ value
           ; minimax
               ~node:child
