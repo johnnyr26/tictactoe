@@ -503,16 +503,7 @@ let losing_moves
   ~(pieces : Piece.t Position.Map.t)
   : Position.t list
   =
-  let opponent = Piece.flip me in
-  let available_moves = available_moves ~game_kind ~pieces in
-  List.filter available_moves ~f:(fun move ->
-    let new_pieces = Map.set pieces ~key:move ~data:opponent in
-    match evaluate ~game_kind ~pieces:new_pieces with
-    | Evaluation.Game_over { winner = Some winner } ->
-      Piece.equal opponent winner
-    | Evaluation.Game_over { winner = None }
-    | Evaluation.Game_continues | Evaluation.Illegal_state ->
-      false)
+  winning_moves ~me:(Piece.flip me) ~game_kind ~pieces
 ;;
 
 let exercise_one =
