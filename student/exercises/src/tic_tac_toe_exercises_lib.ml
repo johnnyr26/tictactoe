@@ -490,13 +490,7 @@ let winning_moves
   List.filter available_moves ~f:(fun move ->
     let new_pieces = Map.set pieces ~key:move ~data:me in
     match evaluate ~game_kind ~pieces:new_pieces with
-    | Evaluation.Game_over { winner = Some winner } ->
-      printf
-        "%s %i %s \n"
-        (Piece.to_string winner)
-        (List.length (Map.keys new_pieces))
-        (Position.to_string move);
-      Piece.equal me winner
+    | Evaluation.Game_over { winner = Some winner } -> Piece.equal me winner
     | Evaluation.Game_over { winner = None }
     | Evaluation.Game_continues | Evaluation.Illegal_state ->
       false)
@@ -509,10 +503,16 @@ let losing_moves
   ~(pieces : Piece.t Position.Map.t)
   : Position.t list
   =
-  ignore me;
-  ignore game_kind;
-  ignore pieces;
-  failwith "Implement me!"
+  let opponent = Piece.flip me in
+  let available_moves = available_moves ~game_kind ~pieces in
+  List.filter available_moves ~f:(fun move ->
+    let new_pieces = Map.set pieces ~key:move ~data:opponent in
+    match evaluate ~game_kind ~pieces:new_pieces with
+    | Evaluation.Game_over { winner = Some winner } ->
+      Piece.equal opponent winner
+    | Evaluation.Game_over { winner = None }
+    | Evaluation.Game_continues | Evaluation.Illegal_state ->
+      false)
 ;;
 
 let exercise_one =
