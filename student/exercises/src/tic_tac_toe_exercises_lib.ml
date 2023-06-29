@@ -476,6 +476,7 @@ let evaluate ~(game_kind : Game_kind.t) ~(pieces : Piece.t Position.Map.t)
   then Evaluation.Game_over { winner = Some Piece.X }
   else if o_win
   then Evaluation.Game_over { winner = Some Piece.O }
+  else if List.length (Map.keys pieces) = 9 then Evaluation.Game_over { winner = None } 
   else Evaluation.Game_continues
 ;;
 
